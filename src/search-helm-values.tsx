@@ -121,7 +121,7 @@ function ChartVersions({ chart }: { chart: string }) {
     data: versions,
     pagination,
   } = usePromise(
-    (searchText: string) => async (options: { page: number }) => {
+    (searchText: string, allVersions: HelmChartVersion[]) => async (options: { page: number }) => {
       await setTimeout(250);
       const filteredVersions = allVersions.filter((version) =>
         version.version.toLowerCase().startsWith(searchText.toLowerCase()),
@@ -130,7 +130,7 @@ function ChartVersions({ chart }: { chart: string }) {
       const newData = filteredVersions.slice(start, start + PAGE_SIZE);
       return { data: newData, hasMore: options.page < filteredVersions.length / PAGE_SIZE - 1 };
     },
-    [searchText],
+    [searchText, allVersions],
   );
 
   const [selectedValues, setSelectedValues] = useState<string>("");
