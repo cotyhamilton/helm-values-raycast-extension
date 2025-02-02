@@ -97,7 +97,15 @@ function ChartVersions({ chart }: { chart: string }) {
   const PAGE_SIZE = 50;
   const [searchText, setSearchText] = useState("");
 
-  const { data } = useExec("helm", ["search", "repo", "-r", `\\v${chart}\\v`, "--versions", "--output", "json"]);
+  const { isLoading: isCommandLoading, data } = useExec("helm", [
+    "search",
+    "repo",
+    "-r",
+    `\\v${chart}\\v`,
+    "--versions",
+    "--output",
+    "json",
+  ]);
 
   const allVersions = useMemo<HelmChartVersion[]>(() => {
     try {
@@ -109,7 +117,7 @@ function ChartVersions({ chart }: { chart: string }) {
   }, [data]);
 
   const {
-    isLoading,
+    isLoading: isPaginationLoading,
     data: versions,
     pagination,
   } = usePromise(
@@ -128,7 +136,12 @@ function ChartVersions({ chart }: { chart: string }) {
   const [selectedValues, setSelectedValues] = useState<string>("");
 
   return (
-    <List isLoading={isLoading} isShowingDetail pagination={pagination} onSearchTextChange={setSearchText}>
+    <List
+      isLoading={isCommandLoading || isPaginationLoading}
+      isShowingDetail
+      pagination={pagination}
+      onSearchTextChange={setSearchText}
+    >
       <List.Section title={chart} subtitle="Available Versions">
         {versions?.map((version) => (
           <List.Item
